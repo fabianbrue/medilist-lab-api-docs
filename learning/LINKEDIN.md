@@ -1,15 +1,13 @@
 # LinkedIn draft — ongoing learning project
 
-I wanted my API documentation learning project to feel closer to my work in healthcare.
+I’m learning API documentation, and I wanted a project closer to my work in healthcare.
 
-So I’m working with Codex on MediList Lab: a fictional medication-list API with source provenance, version conflicts and a traceable documentation workflow.
+Working with Codex, I’ve put together MediList Lab — a fictional medication-list API. AI helped with the demo, docs and tests; I’m learning by questioning its suggestions, checking the examples and making the writing my own.
 
-AI helped build the demo, documentation and tests. My next step is to work through the examples myself, question the design choices and improve the docs in my own voice. Learning how to collaborate with AI is part of the project too.
+It’s an ongoing, independent learning project using synthetic data.
 
-It’s an independent learning project with fully synthetic data — not an Oracle Health product or a clinical tool.
+[Explore MediList Lab](https://fabianbrue.github.io/medilist-lab-api-docs/)
 
-Project: https://fabianbrue.github.io/medilist-lab-api-docs/
+How are you learning to work with AI?
 
-How are you using AI in your documentation work?
-
-#APIDocumentation #TechnicalWriting #HealthcareIT #HumanAIcollaboration #LearningInPublic
+#APIDocumentation #HealthcareIT #HumanAIcollaboration
