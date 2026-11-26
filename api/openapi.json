@@ -1,0 +1,1668 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MediList Lab — independent synthetic API",
+    "version": "0.1.0",
+    "description": "AI-assisted learning scaffold. Original fictional API; not an Oracle Health, i.s.h.med, ePA or FHIR interface. No real patient data, drugs or clinical decisions. State exists in memory only."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:4020",
+      "description": "Local demo only; GitHub Pages is static documentation."
+    }
+  ],
+  "security": [
+    {
+      "DemoKey": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Read demo health",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Health"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                },
+                "example": {
+                  "status": "ok",
+                  "api": "MediList Lab",
+                  "version": "0.1.0",
+                  "synthetic": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/cases/{caseId}/medication-lists": {
+      "get": {
+        "operationId": "getMedicationLists",
+        "summary": "Read both synthetic source snapshots",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Source snapshots"
+        ],
+        "parameters": [
+          {
+            "name": "caseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Synthetic identifier",
+              "example": "case-demo-001"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "viewer",
+                "reviewer"
+              ],
+              "default": "viewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lists"
+                },
+                "example": {
+                  "case_id": "case-demo-001",
+                  "items": [
+                    {
+                      "id": "list-hospital-demo-001",
+                      "case_id": "case-demo-001",
+                      "source": "hospital-demo",
+                      "version": 1,
+                      "captured_at": "2026-01-01T09:00:00Z",
+                      "synthetic": true,
+                      "entries": [
+                        {
+                          "id": "entry-hospital-alpha",
+                          "demo_item_code": "DEMO-ALPHA",
+                          "display": "Synthetic item Alpha — not a drug",
+                          "source_record_id": "record-demo-h-alpha"
+                        },
+                        {
+                          "id": "entry-hospital-beta",
+                          "demo_item_code": "DEMO-BETA",
+                          "display": "Synthetic item Beta — not a drug",
+                          "source_record_id": "record-demo-h-beta"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "list-record-demo-001",
+                      "case_id": "case-demo-001",
+                      "source": "record-demo",
+                      "version": 1,
+                      "captured_at": "2026-01-01T09:05:00Z",
+                      "synthetic": true,
+                      "entries": [
+                        {
+                          "id": "entry-record-alpha",
+                          "demo_item_code": "DEMO-ALPHA",
+                          "display": "Synthetic item Alpha — not a drug",
+                          "source_record_id": "record-demo-r-alpha"
+                        },
+                        {
+                          "id": "entry-record-gamma",
+                          "demo_item_code": "DEMO-GAMMA",
+                          "display": "Synthetic item Gamma — not a drug",
+                          "source_record_id": "record-demo-r-gamma"
+                        }
+                      ]
+                    }
+                  ],
+                  "synthetic": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{caseId}/comparison": {
+      "get": {
+        "operationId": "getComparison",
+        "summary": "Compare exact demo-code presence",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Source snapshots"
+        ],
+        "parameters": [
+          {
+            "name": "caseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Synthetic identifier",
+              "example": "case-demo-001"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "viewer",
+                "reviewer"
+              ],
+              "default": "viewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comparison"
+                },
+                "example": {
+                  "case_id": "case-demo-001",
+                  "source_versions": {
+                    "hospital-demo": 1,
+                    "record-demo": 1
+                  },
+                  "shared_codes": [
+                    "DEMO-ALPHA"
+                  ],
+                  "hospital_only_codes": [
+                    "DEMO-BETA"
+                  ],
+                  "record_only_codes": [
+                    "DEMO-GAMMA"
+                  ],
+                  "comparison_basis": "exact_demo_item_code",
+                  "clinical_validation_performed": false,
+                  "synthetic": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews": {
+      "post": {
+        "operationId": "createReview",
+        "summary": "Create a documentation review for the current source versions",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Documentation reviews"
+        ],
+        "parameters": [
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": true,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "reviewer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Review created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                },
+                "example": {
+                  "id": "review-demo-0001",
+                  "case_id": "case-demo-001",
+                  "source_versions": {
+                    "hospital-demo": 1,
+                    "record-demo": 1
+                  },
+                  "status": "open",
+                  "version": 1,
+                  "outcome": null,
+                  "clinical_validation_performed": false,
+                  "synthetic": true
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Strong review version, including double quotes.",
+                "schema": {
+                  "type": "string",
+                  "description": "Strong version tag",
+                  "example": "\"1\""
+                }
+              },
+              "Location": {
+                "description": "Relative URI of the created review.",
+                "schema": {
+                  "type": "string",
+                  "description": "Review URI",
+                  "example": "/v1/reviews/review-demo-0001"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Source snapshot mismatch or documentation already complete.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "SOURCE_SNAPSHOT_CHANGED",
+                    "message": "Source snapshot mismatch or documentation already complete."
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds 8192 bytes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "BODY_TOO_LARGE",
+                    "message": "Request body exceeds 8192 bytes."
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "JSON_REQUIRED",
+                    "message": "Content-Type must be application/json."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReview"
+              },
+              "example": {
+                "case_id": "case-demo-001",
+                "source_versions": {
+                  "hospital-demo": 1,
+                  "record-demo": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews/{reviewId}": {
+      "get": {
+        "operationId": "getReview",
+        "summary": "Read review status and its current ETag",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Documentation reviews"
+        ],
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Synthetic identifier",
+              "example": "review-demo-0001"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "viewer",
+                "reviewer"
+              ],
+              "default": "viewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                },
+                "example": {
+                  "id": "review-demo-0001",
+                  "case_id": "case-demo-001",
+                  "source_versions": {
+                    "hospital-demo": 1,
+                    "record-demo": 1
+                  },
+                  "status": "open",
+                  "version": 1,
+                  "outcome": null,
+                  "clinical_validation_performed": false,
+                  "synthetic": true
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Strong review version, including double quotes.",
+                "schema": {
+                  "type": "string",
+                  "description": "Strong version tag",
+                  "example": "\"1\""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews/{reviewId}/complete": {
+      "post": {
+        "operationId": "completeReview",
+        "summary": "Record documentation complete; does not approve medication",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Documentation reviews"
+        ],
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Synthetic identifier",
+              "example": "review-demo-0001"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": true,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "reviewer"
+              ]
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "description": "Send the ETag from GET review. Strong tag lists and * are accepted. Weak tags do not match. A stale tag gives 412 before completed-state validation (409).",
+            "schema": {
+              "type": "string",
+              "description": "Strong entity tag",
+              "example": "\"1\""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Review"
+                },
+                "example": {
+                  "id": "review-demo-0001",
+                  "case_id": "case-demo-001",
+                  "source_versions": {
+                    "hospital-demo": 1,
+                    "record-demo": 1
+                  },
+                  "status": "documented",
+                  "version": 2,
+                  "outcome": "documentation_complete",
+                  "clinical_validation_performed": false,
+                  "synthetic": true
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Strong review version, including double quotes.",
+                "schema": {
+                  "type": "string",
+                  "description": "Strong version tag",
+                  "example": "\"1\""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Source snapshot mismatch or documentation already complete.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "SOURCE_SNAPSHOT_CHANGED",
+                    "message": "Source snapshot mismatch or documentation already complete."
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "If-Match does not match the current strong ETag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_VERSION_CHANGED",
+                    "message": "If-Match does not match the current strong ETag."
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeds 8192 bytes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "BODY_TOO_LARGE",
+                    "message": "Request body exceeds 8192 bytes."
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "JSON_REQUIRED",
+                    "message": "Content-Type must be application/json."
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "If-Match is required. GET the review first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "IF_MATCH_REQUIRED",
+                    "message": "If-Match is required. GET the review first."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteReview"
+              },
+              "example": {
+                "outcome": "documentation_complete"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reviews/{reviewId}/events": {
+      "get": {
+        "operationId": "getReviewEvents",
+        "summary": "Read deterministic synthetic review events",
+        "description": "Independent synthetic teaching API. No clinical validation. /v1 endpoints reject all query parameters.",
+        "tags": [
+          "Documentation reviews"
+        ],
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Synthetic identifier",
+              "example": "review-demo-0001"
+            }
+          },
+          {
+            "name": "X-Demo-Role",
+            "in": "header",
+            "required": false,
+            "description": "Public simulation control, not an authenticated identity. Reads default to viewer.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "viewer",
+                "reviewer"
+              ],
+              "default": "viewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Events"
+                },
+                "example": {
+                  "review_id": "review-demo-0001",
+                  "items": [
+                    {
+                      "event_id": "event-demo-0001",
+                      "review_id": "review-demo-0001",
+                      "case_id": "case-demo-001",
+                      "action": "review.created",
+                      "actor": "reviewer-demo",
+                      "review_version": 1,
+                      "occurred_at": "2026-01-01T10:00:01.000Z",
+                      "synthetic": true
+                    }
+                  ],
+                  "synthetic": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON, request fields, outcome or unsupported query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "INVALID_BODY",
+                    "message": "Invalid JSON, request fields, outcome or unsupported query."
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or incorrect public X-Demo-Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "UNAUTHORIZED",
+                    "message": "Missing or incorrect public X-Demo-Key."
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unsupported role or reviewer role required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEWER_REQUIRED",
+                    "message": "Unsupported role or reviewer role required."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Synthetic case or in-memory review not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "REVIEW_NOT_FOUND",
+                    "message": "Synthetic case or in-memory review not found."
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Wrong HTTP method.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": {
+                    "code": "METHOD_NOT_ALLOWED",
+                    "message": "Wrong HTTP method."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "description": "Supported method"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "DemoKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Demo-Key",
+        "description": "Public training value: medilist-demo. Not a real credential."
+      }
+    },
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "required": [
+          "status",
+          "api",
+          "version",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "api": {
+            "type": "string",
+            "enum": [
+              "MediList Lab"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "description": "Demo version",
+            "example": "0.1.0"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "SourceVersions": {
+        "type": "object",
+        "required": [
+          "hospital-demo",
+          "record-demo"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "hospital-demo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "record-demo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "Entry": {
+        "type": "object",
+        "required": [
+          "id",
+          "demo_item_code",
+          "display",
+          "source_record_id"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Synthetic entry identifier"
+          },
+          "demo_item_code": {
+            "type": "string",
+            "description": "Invented code, not a medicine terminology",
+            "example": "DEMO-ALPHA"
+          },
+          "display": {
+            "type": "string",
+            "description": "Synthetic label; not a real drug"
+          },
+          "source_record_id": {
+            "type": "string",
+            "description": "Provenance within the invented source"
+          }
+        }
+      },
+      "MedicationList": {
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "source",
+          "version",
+          "captured_at",
+          "synthetic",
+          "entries"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Synthetic list identifier"
+          },
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "hospital-demo",
+              "record-demo"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Invented snapshot time"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entry"
+            }
+          }
+        }
+      },
+      "Lists": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "items",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MedicationList"
+            }
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "Comparison": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "source_versions",
+          "shared_codes",
+          "hospital_only_codes",
+          "record_only_codes",
+          "comparison_basis",
+          "clinical_validation_performed",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier"
+          },
+          "source_versions": {
+            "$ref": "#/components/schemas/SourceVersions"
+          },
+          "shared_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Exact code present in both sources"
+            }
+          },
+          "hospital_only_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Exact code only in hospital-demo"
+            }
+          },
+          "record_only_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Exact code only in record-demo"
+            }
+          },
+          "comparison_basis": {
+            "type": "string",
+            "enum": [
+              "exact_demo_item_code"
+            ]
+          },
+          "clinical_validation_performed": {
+            "type": "boolean",
+            "enum": [
+              false
+            ],
+            "description": "No clinical validation is performed."
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "CreateReview": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "source_versions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier",
+            "example": "case-demo-001"
+          },
+          "source_versions": {
+            "$ref": "#/components/schemas/SourceVersions"
+          }
+        }
+      },
+      "CompleteReview": {
+        "type": "object",
+        "required": [
+          "outcome"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "documentation_complete"
+            ],
+            "description": "Documentation status only. Does not approve medication."
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "required": [
+          "id",
+          "case_id",
+          "source_versions",
+          "status",
+          "version",
+          "outcome",
+          "clinical_validation_performed",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "In-memory review identifier"
+          },
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier"
+          },
+          "source_versions": {
+            "$ref": "#/components/schemas/SourceVersions"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "documented"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "outcome": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              null,
+              "documentation_complete"
+            ]
+          },
+          "clinical_validation_performed": {
+            "type": "boolean",
+            "enum": [
+              false
+            ],
+            "description": "No clinical validation is performed."
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "required": [
+          "event_id",
+          "review_id",
+          "case_id",
+          "action",
+          "actor",
+          "review_version",
+          "occurred_at",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "description": "Synthetic event identifier"
+          },
+          "review_id": {
+            "type": "string",
+            "description": "Review identifier"
+          },
+          "case_id": {
+            "type": "string",
+            "description": "Synthetic case identifier"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "review.created",
+              "review.documented"
+            ]
+          },
+          "actor": {
+            "type": "string",
+            "enum": [
+              "reviewer-demo"
+            ],
+            "description": "Fixed fictional actor; no authenticated user attribution"
+          },
+          "review_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Deterministic invented event time; not wall-clock audit evidence"
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "Events": {
+        "type": "object",
+        "required": [
+          "review_id",
+          "items",
+          "synthetic"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "review_id": {
+            "type": "string",
+            "description": "Review identifier"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            }
+          },
+          "synthetic": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Stable demo error identifier"
+              },
+              "message": {
+                "type": "string",
+                "description": "Explanation of the failure"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

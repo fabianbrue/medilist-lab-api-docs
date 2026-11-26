@@ -1,0 +1,15 @@
+{
+  "name": "MediList Lab",
+  "description": "Independent synthetic medication-list documentation workflow. An AI-assisted learning project, not a product API.",
+  "status": "learning-scaffold",
+  "pages": [
+    { "file": "index.md", "label": "Overview" },
+    { "file": "quickstart.md", "label": "Quickstart" },
+    { "file": "authentication.md", "label": "Demo roles" },
+    { "file": "reference.md", "label": "API reference" },
+    { "file": "workflow.md", "label": "Review workflow" },
+    { "file": "errors.md", "label": "Errors and conflicts" },
+    { "file": "verification.md", "label": "Verification" },
+    { "file": "case-study.md", "label": "Case study" }
+  ]
+}

@@ -1,0 +1,580 @@
+{
+  "info": {
+    "name": "MediList Lab — synthetic documentation workflow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Run 01–12 in order locally. Includes expected error responses. Fictional learning API; no clinical system or real data. Collection variables review_id/review_etag are set by responses. Do not shadow them in an environment."
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-Demo-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{demo_key}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "review_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "review_etag",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 — Health",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Synthetic data only', () => pm.expect(body.synthetic).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Read source lists",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/cases/{{case_id}}/medication-lists",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "cases",
+            "{{case_id}}",
+            "medication-lists"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Synthetic data only', () => pm.expect(body.synthetic).to.eql(true));",
+              "pm.test('Two source snapshots', () => pm.expect(body.items).to.have.length(2));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Compare exact demo codes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/cases/{{case_id}}/comparison",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "cases",
+            "{{case_id}}",
+            "comparison"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('No clinical validation', () => pm.expect(body.clinical_validation_performed).to.eql(false));",
+              "pm.test('Shared exact code', () => pm.expect(body.shared_codes).to.eql(['DEMO-ALPHA']));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Create documentation review",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"case_id\": \"{{case_id}}\",\n  \"source_versions\": {\n    \"hospital-demo\": 1,\n    \"record-demo\": 1\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.test('No clinical validation', () => pm.expect(body.clinical_validation_performed).to.eql(false));",
+              "pm.test('Open review and version', () => { pm.expect(body.status).to.eql('open'); pm.expect(pm.response.headers.get('ETag')).to.eql('\"1\"'); });",
+              "if (pm.response.code < 300 && body.id) { pm.collectionVariables.set('review_id', body.id); pm.collectionVariables.set('review_etag', pm.response.headers.get('ETag')); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Read review and ETag",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews/{{review_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews",
+            "{{review_id}}"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('No clinical validation', () => pm.expect(body.clinical_validation_performed).to.eql(false));",
+              "if (pm.response.code < 300 && body.id) { pm.collectionVariables.set('review_id', body.id); pm.collectionVariables.set('review_etag', pm.response.headers.get('ETag')); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Record documentation complete",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "If-Match",
+            "value": "{{review_etag}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews/{{review_id}}/complete",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews",
+            "{{review_id}}",
+            "complete"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"documentation_complete\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('No clinical validation', () => pm.expect(body.clinical_validation_performed).to.eql(false));",
+              "pm.test('Documented, not clinically approved', () => { pm.expect(body.status).to.eql('documented'); pm.expect(body.version).to.eql(2); });",
+              "if (pm.response.code < 300 && body.id) { pm.collectionVariables.set('review_id', body.id); pm.collectionVariables.set('review_etag', pm.response.headers.get('ETag')); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Read event history",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews/{{review_id}}/events",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews",
+            "{{review_id}}",
+            "events"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Synthetic data only', () => pm.expect(body.synthetic).to.eql(true));",
+              "pm.test('Two ordered events', () => pm.expect(body.items.map(x => x.action)).to.eql(['review.created', 'review.documented']));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — Stale review ETag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "If-Match",
+            "value": "\"0\""
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews/{{review_id}}/complete",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews",
+            "{{review_id}}",
+            "complete"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"documentation_complete\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 412', () => pm.response.to.have.status(412));",
+              "const body = pm.response.json();",
+              "pm.test('Expected error code', () => pm.expect(body.error.code).to.eql('REVIEW_VERSION_CHANGED'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Repeat with current ETag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "If-Match",
+            "value": "{{review_etag}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews/{{review_id}}/complete",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews",
+            "{{review_id}}",
+            "complete"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"outcome\": \"documentation_complete\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "const body = pm.response.json();",
+              "pm.test('Expected error code', () => pm.expect(body.error.code).to.eql('REVIEW_ALREADY_COMPLETE'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Viewer cannot create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "viewer"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/reviews",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "reviews"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"case_id\": \"{{case_id}}\",\n  \"source_versions\": {\n    \"hospital-demo\": 1,\n    \"record-demo\": 1\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', () => pm.response.to.have.status(403));",
+              "const body = pm.response.json();",
+              "pm.test('Expected error code', () => pm.expect(body.error.code).to.eql('REVIEWER_REQUIRED'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Missing demo key",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/cases/{{case_id}}/comparison",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "cases",
+            "{{case_id}}",
+            "comparison"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API.",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+              "const body = pm.response.json();",
+              "pm.test('Expected error code', () => pm.expect(body.error.code).to.eql('UNAUTHORIZED'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — Unknown synthetic case",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Demo-Role",
+            "value": "reviewer"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/v1/cases/case-missing/comparison",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "v1",
+            "cases",
+            "case-missing",
+            "comparison"
+          ]
+        },
+        "description": "Independent synthetic learning example. Run requests in order against the local API."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+              "const body = pm.response.json();",
+              "pm.test('Expected error code', () => pm.expect(body.error.code).to.eql('CASE_NOT_FOUND'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
