@@ -11,3 +11,13 @@ It’s an ongoing, independent learning project using synthetic data.
 How are you learning to work with AI?
 
 #APIDocumentation #HealthcareIT #HumanAIcollaboration
+
+---
+
+## Image to attach
+
+[Download the LinkedIn image](assets/medilist-lab-linkedin.png). Attach it separately when publishing the post.
+
+![MediList Lab: a technical writer and an AI collaborator working on healthcare API documentation, with synthetic medication-list cards. Labelled as an independent learning project using synthetic data.](assets/medilist-lab-linkedin.png)
+
+Image generated with ImageGen for this independent learning project.
