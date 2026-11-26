@@ -1,12 +1,10 @@
 # LinkedIn draft — ongoing learning project
 
-I’m exploring API documentation through MediList Lab, an independent learning project inspired by healthcare documentation challenges.
+I wanted to explore API documentation with a healthcare example, so I shaped MediList Lab and worked with Codex to build it.
 
-I shaped the concept and worked with Codex, which provided the initial demo, documentation drafts and tests.
+Codex created the initial demo, docs and tests. I’m now checking the examples and refining the explanations — exploring where AI helps and where my judgment as a technical writer matters.
 
-My focus now is on checking the examples, clarifying what the data means and making the documentation useful. That’s what interests me about AI collaboration in technical writing: the questions we ask and the judgment we bring to the results.
-
-The project uses fully synthetic data and does not represent an Oracle Health product or interface.
+It’s an independent learning project using synthetic data, not an Oracle Health product or interface.
 
 https://fabianbrue.github.io/medilist-lab-api-docs/
 
